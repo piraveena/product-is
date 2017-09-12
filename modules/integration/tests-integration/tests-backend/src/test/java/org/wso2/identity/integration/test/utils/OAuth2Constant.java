@@ -83,6 +83,7 @@ public final class OAuth2Constant {
     public static final class PlaygroundAppPaths {
 
         public static final String callBackPath = "/oauth2client";
+        public static final String backChannelLogout = "/logout";
         public static final String homePagePath = "/index.jsp";
         public static final String appResetPath = "/oauth2.jsp?reset=true";
         public static final String appAuthorizePath = "/oauth2.jsp";
