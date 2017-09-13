@@ -23,4 +23,8 @@ public class OidcBackChannelLogoutServlet extends HttpServlet {
             IOException {
         log.info("*****accessing get method");
     }
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+            IOException {
+        log.info("*****accessing post method");
+    }
 }

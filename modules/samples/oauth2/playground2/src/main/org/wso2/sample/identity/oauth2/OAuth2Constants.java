@@ -31,6 +31,7 @@ public final class OAuth2Constants {
     public static final String OAUTH2_ACCESS_ENDPOINT = "accessEndpoint";
     public static final String OIDC_LOGOUT_ENDPOINT = "logoutEndpoint";
     public static final String OIDC_SESSION_IFRAME_ENDPOINT = "sessionIFrameEndpoint";
+    public static final String BACK_CHANNEL_LOGOUT_URL = "backChannelLogoutUrl";
 
     // application specific session attributes
     public static final String CODE = "code";
