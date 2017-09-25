@@ -44,6 +44,11 @@
         <servlet-class>org.wso2.sample.identity.oauth2.OidcBackChannelLogoutServlet</servlet-class>
         <load-on-startup>0</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>OidcBackChannelLogoutPage</servlet-name>
+        <jsp-file>/logout-token.jsp</jsp-file>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
     
    <servlet-mapping>
         <servlet-name>OAuth2ClientServlet</servlet-name>
@@ -58,5 +63,8 @@
         <servlet-name>OAuth2AccessResourcePage</servlet-name>
         <url-pattern>/oauth2-access-resource.jsp</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>OidcBackChannelLogoutPage</servlet-name>
+        <url-pattern>/logout/logout-token.jsp</url-pattern>
+    </servlet-mapping>
 </web-app>

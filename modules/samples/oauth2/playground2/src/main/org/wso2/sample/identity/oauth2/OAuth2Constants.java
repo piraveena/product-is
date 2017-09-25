@@ -38,6 +38,8 @@ public final class OAuth2Constants {
     public static final String ID_TOKEN = "id_token";
     public static final String RESULT = "result";
     public static final String TOKEN_VALIDATION = "valid";
+    public static final String LOGOUT_TOKEN = "logout_token";
+
 
     // request headers
     public static final String REFERER = "referer";
