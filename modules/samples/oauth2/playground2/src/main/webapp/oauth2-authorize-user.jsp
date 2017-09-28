@@ -6,6 +6,8 @@
 <%@page import="org.apache.oltu.oauth2.common.message.types.GrantType" %>
 <%@page import="org.wso2.sample.identity.oauth2.OAuth2Constants" %>
 <%@ page import="org.wso2.sample.identity.oauth2.OAuthPKCEAuthenticationRequestBuilder" %>
+<%@ page import="org.wso2.sample.identity.oauth2.OpenIDConnectConstants" %>
+<%@ page import="java.util.UUID" %>
 <%@page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
@@ -27,6 +29,7 @@
         String recpassword = request.getParameter(OAuth2Constants.RESOURCE_OWNER_PASSWORD_PARAM);
 
         String authzGrantType = request.getParameter(OAuth2Constants.OAUTH2_GRANT_TYPE);
+        String implicitRespType=request.getParameter(OpenIDConnectConstants.IMPLICIT_RESPONSE_TYPE);
         String scope = request.getParameter(OAuth2Constants.SCOPE);
         String callBackUrl = request.getParameter(OAuth2Constants.CALL_BACK_URL);
 
@@ -69,12 +72,26 @@
 <%
         return;
     }
+    OAuthPKCEAuthenticationRequestBuilder oAuthPKCEAuthenticationRequestBuilder =
+            new OAuthPKCEAuthenticationRequestBuilder(authzEndpoint);
+    if(authzGrantType.equals(OAuth2Constants.OAUTH2_GRANT_TYPE_IMPLICIT)) {
 
-    OAuthPKCEAuthenticationRequestBuilder oAuthPKCEAuthenticationRequestBuilder = new OAuthPKCEAuthenticationRequestBuilder(authzEndpoint);
-    if (authzGrantType.equals(OAuth2Constants.OAUTH2_GRANT_TYPE_CODE) && usePKCE) {
-        oAuthPKCEAuthenticationRequestBuilder = oAuthPKCEAuthenticationRequestBuilder.setPKCECodeChallenge(PKCECodeChallenge, PKCECodeChallengeMethod);
+
+        if (implicitRespType.equals(OpenIDConnectConstants.ID_TOKEN) ||
+                implicitRespType.equals(OpenIDConnectConstants.ID_TOKEN_TOKEN)) {
+            authzGrantType = implicitRespType;
+            oAuthPKCEAuthenticationRequestBuilder =
+                    oAuthPKCEAuthenticationRequestBuilder.setNonce(UUID.randomUUID().toString());
+            session.setAttribute(OpenIDConnectConstants.IMPLICIT_RESPONSE_TYPE, implicitRespType);
+        }
     }
 
+
+else if (authzGrantType.equals(OAuth2Constants.OAUTH2_GRANT_TYPE_CODE) && usePKCE) {
+        oAuthPKCEAuthenticationRequestBuilder =
+                oAuthPKCEAuthenticationRequestBuilder.setPKCECodeChallenge(PKCECodeChallenge,
+                        PKCECodeChallengeMethod);
+    }
     oAuthPKCEAuthenticationRequestBuilder
             .setClientId(consumerKey)
             .setRedirectURI((String) session.getAttribute(OAuth2Constants.CALL_BACK_URL))
