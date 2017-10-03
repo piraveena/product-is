@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 // This is the servlet which handles OAuth callbacks.
 public class OAuth2ClientServlet extends HttpServlet {
@@ -101,13 +102,23 @@ public class OAuth2ClientServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
 			IOException {
-		RequestDispatcher dispatcher = req.getRequestDispatcher("oauth2.jsp");
-		dispatcher.forward(req, resp);
+
+		if (req.isRequestedSessionIdValid()) {
+			RequestDispatcher dispatcher = req.getRequestDispatcher("oauth2.jsp");
+			if (req.getParameter("idToken") != null) {
+				BachChannelOAuthCodeCache.storeid_token(req.getSession(false), req.getParameter("idToken"));
+			}
+			dispatcher.forward(req, resp);
+		} else{
+		resp.sendRedirect("index.jsp");
+	}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+
 		doGet(req, resp);
+
 	}
 }

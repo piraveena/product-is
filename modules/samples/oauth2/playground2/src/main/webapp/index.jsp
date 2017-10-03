@@ -22,6 +22,14 @@
 
 </head><body><a id="top-of-page"></a><div id="wrap" class="clearfix"/>
 <!-- ===================================== END HEADER ===================================== -->
+<script>
+    window.location.replace("#");
+
+    // slice off the remaining '#' in HTML5:
+    if (typeof window.history.replaceState == 'function') {
+        history.replaceState({}, '', window.location.href.slice(0, -1));
+    }
+</script>
 
 <!-- 
 	

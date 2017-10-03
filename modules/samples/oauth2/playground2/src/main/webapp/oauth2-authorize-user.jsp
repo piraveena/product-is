@@ -74,20 +74,19 @@
     }
     OAuthPKCEAuthenticationRequestBuilder oAuthPKCEAuthenticationRequestBuilder =
             new OAuthPKCEAuthenticationRequestBuilder(authzEndpoint);
-    if(authzGrantType.equals(OAuth2Constants.OAUTH2_GRANT_TYPE_IMPLICIT)) {
+    if (authzGrantType.equals(OAuth2Constants.OAUTH2_GRANT_TYPE_IMPLICIT)) {
 
+        if (scope.equals(OAuth2Constants.SCOPE_OPENID)) {
 
-        if (implicitRespType.equals(OpenIDConnectConstants.ID_TOKEN) ||
-                implicitRespType.equals(OpenIDConnectConstants.ID_TOKEN_TOKEN)) {
-            authzGrantType = implicitRespType;
-            oAuthPKCEAuthenticationRequestBuilder =
-                    oAuthPKCEAuthenticationRequestBuilder.setNonce(UUID.randomUUID().toString());
-            session.setAttribute(OpenIDConnectConstants.IMPLICIT_RESPONSE_TYPE, implicitRespType);
+            if (implicitRespType.equals(OpenIDConnectConstants.ID_TOKEN) ||
+                    implicitRespType.equals(OpenIDConnectConstants.ID_TOKEN_TOKEN)) {
+                authzGrantType = implicitRespType;
+                oAuthPKCEAuthenticationRequestBuilder =
+                        oAuthPKCEAuthenticationRequestBuilder.setNonce(UUID.randomUUID().toString());
+                session.setAttribute(OpenIDConnectConstants.IMPLICIT_RESPONSE_TYPE, implicitRespType);
+            }
         }
-    }
-
-
-else if (authzGrantType.equals(OAuth2Constants.OAUTH2_GRANT_TYPE_CODE) && usePKCE) {
+    } else if (authzGrantType.equals(OAuth2Constants.OAUTH2_GRANT_TYPE_CODE) && usePKCE) {
         oAuthPKCEAuthenticationRequestBuilder =
                 oAuthPKCEAuthenticationRequestBuilder.setPKCECodeChallenge(PKCECodeChallenge,
                         PKCECodeChallengeMethod);

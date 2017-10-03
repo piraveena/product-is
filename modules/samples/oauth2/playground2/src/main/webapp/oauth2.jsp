@@ -14,6 +14,7 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="org.json.JSONObject" %>
+<%@ page import="org.wso2.sample.identity.oauth2.BachChannelOAuthCodeCache" %>
 <%
     String code = null;
     String accessToken = null;
@@ -25,8 +26,8 @@
     String grantType = null;
     String code_verifier = null;
     String code_challenge = null;
-    String implicit_response_type=null;
-    String jwtid_token=null;
+    String implicit_response_type = null;
+    String jwtid_token = null;
 
     boolean isOIDCLogoutEnabled = false;
     boolean isOIDCSessionEnabled = false;
@@ -57,7 +58,7 @@
 
         error = request.getParameter(OAuth2Constants.ERROR);
         grantType = (String) session.getAttribute(OAuth2Constants.OAUTH2_GRANT_TYPE);
-        implicit_response_type=(String)session.getAttribute(OpenIDConnectConstants.IMPLICIT_RESPONSE_TYPE);
+        implicit_response_type = (String) session.getAttribute(OpenIDConnectConstants.IMPLICIT_RESPONSE_TYPE);
         if (StringUtils.isNotBlank(request.getHeader(OAuth2Constants.REFERER)) &&
                 request.getHeader(OAuth2Constants.REFERER).contains("rpIFrame")) {
             /**
@@ -108,6 +109,7 @@
             }
         }
 
+
     } catch (Exception e) {
         error = e.getMessage();
     }
@@ -136,7 +138,7 @@
 
             var grantType = document.getElementById("grantType").value;
             var scope = document.getElementById("scope").value;
-            var implicit_response_type= document.getElementById("response_type").value;
+            var implicit_response_type = document.getElementById("response_type").value;
 
             document.getElementById("logutep").style.display = "none";
             document.getElementById("sessionep").style.display = "none";
@@ -164,7 +166,7 @@
                 document.getElementById("recpasswordtr").style.display = "none";
                 document.getElementById("formPost").style.display = "";
                 if (scope.indexOf("openid") > -1) {
-                    document.getElementById("implicitRespType").style.display="";
+                    document.getElementById("implicitRespType").style.display = "";
                     document.getElementById("logutep").style.display = "";
                     document.getElementById("sessionep").style.display = "";
                 }
@@ -205,80 +207,79 @@
             }
             return "";
         }
-       //
-        function getIDtoken(){
+        function getIDtoken() {
             var fragment = window.location.hash.substring(1);
             var arrParams = fragment.split("&");
-            for(var i=0; i<arrParams.length; i++){
+            for (var i = 0; i < arrParams.length; i++) {
                 var sParam = arrParams[i].split("=");
 
                 if (sParam[0] == "id_token") {
-                    var idToken=sParam[1];
+                    var idToken = sParam[1];
                     return idToken;
 
                 }
             }
             return "";
         }
-        function getDecodedIDToken(){
+        function getDecodedIDToken() {
             var fragment = window.location.hash.substring(1);
-                var arrParams = fragment.split("&");
-                for(var i=0; i<arrParams.length; i++){
-                    var sParam = arrParams[i].split("=");
+            var arrParams = fragment.split("&");
+            for (var i = 0; i < arrParams.length; i++) {
+                var sParam = arrParams[i].split("=");
 
-                    if (sParam[0] == "id_token") {
-                        var decodedString=atob(sParam[1].split(".")[1]);
-                        return decodedString;
+                if (sParam[0] == "id_token") {
+                    var decodedString = atob(sParam[1].split(".")[1]);
+                    return decodedString;
 
-                    }
                 }
+            }
             return "";
         }
         function makeList(data) {
 
             document.write('<tbody>');
 
-                for(var i in data){
-                    document.write('<div><tr><td><label id="idtokenList">')
-                    document.write(i);
-                    document.write('</label></td><td>');
-                    document.write(data[i]);
-                    document.write('</td></tr></div>');
-                }
+            for (var i in data) {
+                document.write('<div><tr><td><label id="idtokenList">')
+                document.write(i);
+                document.write('</label></td><td>');
+                document.write(data[i]);
+                document.write('</td></tr></div>');
+            }
             document.write('</tbody>');
 
         }
 
-                </script>
+    </script>
 
-            </head>
-            <!-- ===================================== END HEADER ===================================== -->
-            <body><a id="top-of-page"></a>
+</head>
+<!-- ===================================== END HEADER ===================================== -->
+<body><a id="top-of-page"></a>
 
-            <div id="wrap" class="clearfix"/>
-            <!-- Menu Horizontal -->
-            <ul class="menu">
-                <li class="current"><a href="index.jsp">Home</a></li>
-            </ul>
+<div id="wrap" class="clearfix"/>
+<!-- Menu Horizontal -->
+<ul class="menu">
+    <li class="current"><a href="index.jsp">Home</a></li>
+</ul>
 
-            <div class="col_12"/>
-            <div class="col_9"/>
-            <h3>WSO2 OAuth2 Playground</h3>
-            <table>
-                <tr>
-                    <td>
-                        <% if (accessToken == null && code == null && grantType == null) {
-                            code_verifier = UUID.randomUUID().toString() + UUID.randomUUID().toString();
-                            code_verifier = code_verifier.replaceAll("-", "");
+<div class="col_12"/>
+<div class="col_9"/>
+<h3>WSO2 OAuth2 Playground</h3>
+<table>
+    <tr>
+        <td>
+            <% if (accessToken == null && code == null && grantType == null) {
+                code_verifier = UUID.randomUUID().toString() + UUID.randomUUID().toString();
+                code_verifier = code_verifier.replaceAll("-", "");
 
-                            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                            byte[] hash = digest.digest(code_verifier.getBytes(StandardCharsets.US_ASCII));
-                            //Base64 encoded string is trimmed to remove trailing CR LF
-                            code_challenge = new String(Base64.encodeBase64URLSafe(hash), StandardCharsets.UTF_8).trim();
-                            //set the generated code verifier to the current user session
-                            session.setAttribute(OAuth2Constants.OAUTH2_PKCE_CODE_VERIFIER, code_verifier);
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] hash = digest.digest(code_verifier.getBytes(StandardCharsets.US_ASCII));
+                //Base64 encoded string is trimmed to remove trailing CR LF
+                code_challenge = new String(Base64.encodeBase64URLSafe(hash), StandardCharsets.UTF_8).trim();
+                //set the generated code verifier to the current user session
+                session.setAttribute(OAuth2Constants.OAUTH2_PKCE_CODE_VERIFIER, code_verifier);
 
-                        %>
+            %>
             <div id="loginDiv" class="sign-in-box" width="100%">
                 <% if (error != null && error.trim().length() > 0) {%>
                 <table class="user_pass_table" width="100%">
@@ -341,12 +342,13 @@
                         <tr id="implicitRespType" style="display: none">
                             <td><label>Implicit Response Type: </label></td>
                             <td>
-                                <select id="response_type" name="response_type" >
+                                <select id="response_type" name="response_type">
                                     <option value="<%=OpenIDConnectConstants.ID_TOKEN%>" selected="selected">
                                         ID token Only
                                     </option>
                                     <option value="<%=OpenIDConnectConstants.ID_TOKEN_TOKEN%>">ID token &
-                                        Access Token</option>
+                                        Access Token
+                                    </option>
                                 </select>
                             </td>
                         </tr>
@@ -429,7 +431,8 @@
                         <tbody>
                         <tr>
                             <td>Authorization Code :</td>
-                            <td><%=code%></td>
+                            <td><%=code%>
+                            </td>
                         </tr>
                         <tr>
                             <td>Callback URL :</td>
@@ -484,66 +487,66 @@
             %>
 
             <div>
-                <%--<form action="oauth2-access-resource.jsp" id="loginForm" method="post">--%>
 
-                    <table class="user_pass_table">
-                        <tbody>
-                        <tr>
-                            <td><label>Logged In User :</label></td>
-                            <td><label id="loggedUser"><%=name%></label></td>
-                        </tr>
-                        <tr>
-                            <td><label>Access Token :</label></td>
-                            <td><input id="accessToken" name="accessToken" style="width:350px" value="<%=accessToken%>"/>
-                        </tr>
+                <table class="user_pass_table">
+                    <tbody>
+                    <tr>
+                        <td><label>Logged In User :</label></td>
+                        <td><label id="loggedUser"><%=name%>
+                        </label></td>
+                    </tr>
+                    <tr>
+                        <td><label>Access Token :</label></td>
+                        <td><input id="accessToken" name="accessToken" style="width:350px" value="<%=accessToken%>"/>
+                    </tr>
 
-                        <tr>
-                            <td><h5>ID Token:</h5></td>
-                            <td> <input id="idToken" name="idToken" style="width:700px"/>
+                    <tr>
+                        <td><h5>ID Token:</h5></td>
+                        <td><input id="idToken" name="idToken" style="width:700px"/>
                             <script type="text/javascript">
-                                document.getElementById("idToken").value ='<%=idToken%>';
+                                document.getElementById("idToken").value = '<%=idToken%>';
                             </script>
-                            </td>
-                        </tr>
-                            <%
-                               byte[] decodedBytes = Base64.decodeBase64(idToken.split("\\.")[1]);
-                                JSONObject jsonidtoken = new JSONObject(new String(decodedBytes));
-                                Iterator<?> keyset = jsonidtoken.keys();
+                        </td>
+                    </tr>
+                    <%
+                        byte[] decodedBytes = Base64.decodeBase64(idToken.split("\\.")[1]);
+                        JSONObject jsonidtoken = new JSONObject(new String(decodedBytes));
+                        Iterator<?> keyset = jsonidtoken.keys();
 
-                                while (keyset.hasNext()) {
-                                    String key =  (String) keyset.next();
-                                    Object value = jsonidtoken.get(key);
-                            %>
-                        <tr>
-                            <td><label id="idtokenList"><%=key%></label>
-                            </td>
-                            <td><%=value%>
-                            </td>
-                        </tr>
+                        while (keyset.hasNext()) {
+                            String key = (String) keyset.next();
+                            Object value = jsonidtoken.get(key);
+                    %>
+                    <tr>
+                        <td><label id="idtokenList"><%=key%>
+                        </label>
+                        </td>
+                        <td><%=value%>
+                        </td>
+                    </tr>
 
-                        <%}%>
+                    <%}%>
 
-                        <tr>
-                            <td>
-                                <input type="submit" class="button" value="Get UserInfo">
-                            </td>
-                            <%
-                                if (isOIDCLogoutEnabled) {
-                            %>
-                            <td>
-                                <button type="button" class="button"
-                                        onclick="document.location.href='<%=(String)session.getAttribute(OAuth2Constants.OIDC_LOGOUT_ENDPOINT)%>';">
-                                    Logout
-                                </button>
-                            </td>
-                            <%
-                                }
-                            %>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <tr>
+                        <td>
+                            <input type="submit" class="button" value="Get UserInfo">
+                        </td>
+                        <%
+                            if (isOIDCLogoutEnabled) {
+                        %>
+                        <td>
+                            <button type="button" class="button"
+                                    onclick="document.location.href='<%=(String)session.getAttribute(OAuth2Constants.OIDC_LOGOUT_ENDPOINT)%>';">
+                                Logout
+                            </button>
+                        </td>
+                        <%
+                            }
+                        %>
+                    </tr>
+                    </tbody>
+                </table>
 
-                <%--</form>--%>
             </div>
 
             <%} else { %>
@@ -577,91 +580,174 @@
                 </form>
             </div>
             <%} %>
-            <% } else if (implicit_response_type!= null && OpenIDConnectConstants.ID_TOKEN.equals(implicit_response_type)) {
+            <% } else if (implicit_response_type != null &&
+                    OpenIDConnectConstants.ID_TOKEN.equals(implicit_response_type)) {
             %>
             <div>
-            <table class="user_pass_table">
-            <tbody>
-                <tr>
-                <td><h5>ID Token:</h5></td>
-                <td><input id="idToken" name="idToken" style="width:800px"/>
-                    <script type="text/javascript">
-                        document.getElementById("idToken").value = getIDtoken();
-                    </script>
-                </td>
-                </tr>
-                <tr>
-                   <script type="text/javascript">
-                    var decodedIdToken=JSON.parse(getDecodedIDToken());
-                    makeList(decodedIdToken);
-                  </script>
-                </tr>
-            </tbody>
-            </table>
-                <% } else if (implicit_response_type!= null &&
+                <table class="user_pass_table">
+                    <tbody>
+                    <%if (request.getParameter("idToken") == null) {%>
+                    <form method="POST" action=''>
+                        <tr>
+                            <td><h5>ID Token:</h5></td>
+                            <td><input id="idToken" name="idToken" style="width:800px"/>
+                                <script type="text/javascript">
+                                    document.getElementById("idToken").value = getIDtoken();
+                                    document.forms[0].submit();
+                                </script>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <script type="text/javascript">
+                                var decodedIdToken = JSON.parse(getDecodedIDToken());
+                                makeList(decodedIdToken);
+                            </script>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" value="Submit"/>
+                            </td>
+                        </tr>
+                    </form>
+                    <%
+                    } else {
+                    %>
+                    <tr>
+                        <td><h5>ID Token:</h5></td>
+                        <td><input id="idToken" name="idToken" style="width:800px"/>
+                            <script type="text/javascript">
+                                document.getElementById("idToken").value = getIDtoken();
+                            </script>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <script type="text/javascript">
+                            var decodedIdToken = JSON.parse(getDecodedIDToken());
+                            makeList(decodedIdToken);
+                        </script>
+                    </tr>
+                    <%}%>
+
+                    <tr>
+                        <%
+                            if (isOIDCLogoutEnabled) {
+                        %>
+                        <td>
+                            <button type="button" class="button"
+                                    onclick="document.location.href='<%=(String)session.getAttribute(OAuth2Constants.OIDC_LOGOUT_ENDPOINT)%>';">
+                                Logout
+                            </button>
+                        </td>
+                        <%
+
+                            }
+                        %>
+                    </tr>
+                    </tbody>
+                </table>
+                    <% } else if (implicit_response_type!= null &&
                     OpenIDConnectConstants.ID_TOKEN_TOKEN.equals(implicit_response_type)) {%>
                 <div>
                     <table class="user_pass_table">
-                        <tbody>
-                <tr>
-                    <td><label><h5>Access Token :</h5></label></td>
-                    <td><input id="accessToken" name="accessToken" style="width:350px"/>
-                        <script type="text/javascript">
-                            document.getElementById("accessToken").value = getAcceesToken();
-                        </script>
-                </tr>
-                <tr>
-                    <td><h5>ID Token:</h5></td>
-                    <td> <input id="idToken" name="idToken" style="width:800px"/>
-                        <script type="text/javascript">
-                            document.getElementById("idToken").value = getIDtoken();
-                        </script>
-                    </td>
 
-                </tr>
-                <tr>
-                     <script type="text/javascript">
-                        var decodedIdToken=JSON.parse(getDecodedIDToken());
-                        makeList(decodedIdToken);
-                    </script>
-                </tr>
-            </tbody>
-            </table>
 
-            <%} else if (grantType != null && OAuth2Constants.OAUTH2_GRANT_TYPE_IMPLICIT.equals(grantType)) {%><div>
-                <form action="oauth2-access-resource.jsp" id="loginForm" method="post">
-
-                    <table class="user_pass_table">
                         <tbody>
                         <tr>
-                            <td><label>Access Token :</label></td>
+                            <td><label><h5>Access Token :</h5></label></td>
                             <td><input id="accessToken" name="accessToken" style="width:350px"/>
                                 <script type="text/javascript">
                                     document.getElementById("accessToken").value = getAcceesToken();
                                 </script>
                         </tr>
-                        <% if (application.getInitParameter("setup").equals("AM")) { %>
+                        <%if (request.getParameter("idToken") == null) {%>
+                        <form method="POST" action=''>
+                            <tr>
+                                <td><h5>ID Token:</h5></td>
+                                <td><input id="idToken" name="idToken" style="width:800px"/>
+                                    <script type="text/javascript">
+                                        document.getElementById("idToken").value = getIDtoken();
+                                        document.forms[0].submit();
+                                    </script>
+                                </td>
+
+                            </tr>
+                        </form>
+                        <%} else {%>
                         <tr>
-                            <td><label>Resource URL :</label></td>
-                            <td><input id="resource_url" name="resource_url" type="text" style="width:350px"/>
-                        </tr>
-                        <% } %>
-                        <tr>
-                            <td><label>Introspection Endpoint :</label></td>
-                            <td><input id="resource_url" name="resource_url" type="text" style="width:350px"/>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="submit" class="button" value="Get TokenInfo">
+                            <td><h5>ID Token:</h5></td>
+                            <td><input id="idToken" name="idToken" style="width:800px"/>
+                                <script type="text/javascript">
+                                    document.getElementById("idToken").value = getIDtoken();
+                                    document.forms[0].submit();
+                                </script>
                             </td>
+
+                        </tr>
+
+                        <%}%>
+                        <tr>
+                            <script type="text/javascript">
+                                var decodedIdToken = JSON.parse(getDecodedIDToken());
+                                makeList(decodedIdToken);
+                            </script>
+                        </tr>
+
+                        <tr>
+                            <%
+                                if (isOIDCLogoutEnabled) {
+                            %>
+                            <td>
+                                <button type="button" class="button"
+                                        onclick="document.location.href='<%=(String)session.getAttribute(OAuth2Constants.OIDC_LOGOUT_ENDPOINT)%>';">
+                                    Logout
+                                </button>
+                            </td>
+                            <%
+
+                                }
+                            %>
                         </tr>
                         </tbody>
                     </table>
+                        <% } else if (grantType != null && OAuth2Constants.OAUTH2_GRANT_TYPE_IMPLICIT.equals(grantType)) {%>
+                    <div>
+                        <form action="oauth2-access-resource.jsp" id="loginForm" method="post">
 
-                </form>
+                            <table class="user_pass_table">
+                                <tbody>
+                                <tr>
+                                    <td><label>Access Token :</label></td>
+                                    <td><input id="accessToken" name="accessToken" style="width:350px"/>
+                                        <script type="text/javascript">
+                                            document.getElementById("accessToken").value = getAcceesToken();
+                                        </script>
+                                </tr>
+                                <% if (application.getInitParameter("setup").equals("AM")) { %>
+                                <tr>
+                                    <td><label>Resource URL :</label></td>
+                                    <td><input id="resource_url" name="resource_url" type="text" style="width:350px"/>
+                                </tr>
+                                <% } %>
+                                <tr>
+                                    <td><label>Introspection Endpoint :</label></td>
+                                    <td><input id="resource_url" name="resource_url" type="text" style="width:350px"/>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="submit" class="button" value="Get TokenInfo">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
 
-            </div>
-            <% } %>
+                        </form>
+
+                    </div>
+                        <% } %>
         </td>
     </tr>
 </table>
@@ -686,7 +772,7 @@
 
     function pkceChangeVisibility(jQuery ) {
         if ($("#grantType").val() == "<%=OAuth2Constants.OAUTH2_GRANT_TYPE_CODE%>" &&
-                $("input[name='use_pkce']:checked")[0].value == "yes") {
+            $("input[name='use_pkce']:checked")[0].value == "yes") {
             $("#pkceMethod").show();
             $("#pkceChallenge").show();
             $("#pkceVerifier").show();
