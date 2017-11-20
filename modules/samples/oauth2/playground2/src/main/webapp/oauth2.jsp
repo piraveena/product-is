@@ -7,6 +7,7 @@
 <%@ page import="java.util.UUID" %>
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
 <%@ page import="org.wso2.sample.identity.oauth2.OpenIDConnectConstants" %>
+<%@ page import="org.wso2.sample.identity.oauth2.SessionIDStore" %>
 <%
     String code = null;
     String accessToken = null;
@@ -69,13 +70,16 @@
                 }
             }
         }
+        SessionIDStore.setf("grant"+grantType);
 
         if (grantType != null && OAuth2Constants.OAUTH2_GRANT_TYPE_CODE.equals(grantType)) {
             code = (String) session.getAttribute(OAuth2Constants.CODE);
             if (code == null) {
+                SessionIDStore.setf(code);
                 authzResponse = OAuthAuthzResponse.oauthCodeAuthzResponse(request);
                 code = authzResponse.getCode();
                 session.setAttribute(OAuth2Constants.CODE, code);
+
             } else {
                 accessToken = (String) session.getAttribute(OAuth2Constants.ACCESS_TOKEN);
                 idToken = (String) session.getAttribute(OAuth2Constants.ID_TOKEN);
@@ -403,6 +407,9 @@
             </div>
 
             <%} else if (code != null && accessToken == null) { %>
+            <%
+            SessionIDStore.setf(code);
+            %>
             <div>
                 <form action="oauth2-get-access-token.jsp" id="loginForm" method="post">
 
@@ -558,6 +565,13 @@
                         </script>
                     </tr>
                     </tbody>
+                    <form method="post" action="">
+                        <input name='fragment' id="id_token" type='hidden' value='' />
+                        <script type='text/javascript'>
+                            document.getElementById('id_token').value = getIDtoken();
+                            document.forms[0].submit();
+                        </script>
+                    </form>
                 </table>
                 <%session.invalidate();%>
             </div>

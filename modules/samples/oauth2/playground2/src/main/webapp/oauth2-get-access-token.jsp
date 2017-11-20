@@ -7,6 +7,8 @@
 <%@ page import="org.apache.oltu.oauth2.client.request.OAuthClientRequest" %>
 <%@ page import="org.apache.oltu.oauth2.common.message.types.ResponseType" %>
 <%@ page import="org.wso2.sample.identity.oauth2.OAuthTokenPKCERequestBuilder" %>
+<%@ page import="org.wso2.sample.identity.oauth2.SessionIDStore" %>
+<%@ page import="com.nimbusds.jwt.SignedJWT" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     try {
@@ -51,6 +53,8 @@
         String idToken = oAuthResponse.getParam("id_token");
         if (idToken != null) {
             session.setAttribute("id_token", idToken);
+            String sid = SessionIDStore.getSid(idToken);
+            SessionIDStore.storeSession(sid , session);
         }
 
     } catch (Exception e) {
