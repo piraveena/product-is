@@ -54,7 +54,9 @@
         if (idToken != null) {
             session.setAttribute("id_token", idToken);
             String sid = SessionIDStore.getSid(idToken);
-            SessionIDStore.storeSession(sid , session);
+            if(sid!=null) {
+                SessionIDStore.storeSession(sid, session);
+            }
         }
 
     } catch (Exception e) {

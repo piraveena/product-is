@@ -8,6 +8,7 @@
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
 <%@ page import="org.wso2.sample.identity.oauth2.OpenIDConnectConstants" %>
 <%@ page import="org.wso2.sample.identity.oauth2.SessionIDStore" %>
+<%@ page import="java.net.URI" %>
 <%
     String code = null;
     String accessToken = null;
@@ -70,16 +71,13 @@
                 }
             }
         }
-        SessionIDStore.setf("grant"+grantType);
 
         if (grantType != null && OAuth2Constants.OAUTH2_GRANT_TYPE_CODE.equals(grantType)) {
             code = (String) session.getAttribute(OAuth2Constants.CODE);
             if (code == null) {
-                SessionIDStore.setf(code);
                 authzResponse = OAuthAuthzResponse.oauthCodeAuthzResponse(request);
                 code = authzResponse.getCode();
                 session.setAttribute(OAuth2Constants.CODE, code);
-
             } else {
                 accessToken = (String) session.getAttribute(OAuth2Constants.ACCESS_TOKEN);
                 idToken = (String) session.getAttribute(OAuth2Constants.ID_TOKEN);
@@ -157,6 +155,7 @@
                 document.getElementById("formPost").style.display = "";
 
                 if (scope.indexOf("openid") > -1) {
+                    document.getElementById("logutep").style.display = "";
                     document.getElementById("implicitRespType").style.display = "";
                 }
             } else if ('password' == grantType) {
@@ -407,9 +406,6 @@
             </div>
 
             <%} else if (code != null && accessToken == null) { %>
-            <%
-            SessionIDStore.setf(code);
-            %>
             <div>
                 <form action="oauth2-get-access-token.jsp" id="loginForm" method="post">
 
@@ -548,6 +544,7 @@
             <div>
                 <table class="user_pass_table">
                     <tbody>
+                    <form method="post" action="">
                     <tr>
                         <td><h5>ID Token:</h5></td>
                         <td><input id="idToken" name="idToken" style="width:800px"/>
@@ -558,27 +555,42 @@
                         <td>
                         </td>
                     </tr>
+                    </form>
+                    <%if(request.getParameter("idToken")==null){%>
+                    <script>
+                        document.forms[0].submit();
+                    </script>
+                    <%}else{
+                        String sid = SessionIDStore.getSid(request.getParameter("idToken"));
+                        if(sid!=null) {
+                            SessionIDStore.storeSession(sid,session);
+                        }
+                    }%>
+
+
                     <tr>
                         <script type="text/javascript">
                             var decodedIdToken = JSON.parse(getDecodedIDToken());
                             makeList(decodedIdToken);
                         </script>
                     </tr>
+                    <tr>
+                        <td>
+                            <button type="button" class="button"
+                                    onclick="document.location.href='<%=(String)session.getAttribute(OAuth2Constants.OIDC_LOGOUT_ENDPOINT)%>';">
+                                Logout
+                            </button>
+                        </td>
+                    </tr>
                     </tbody>
-                    <form method="post" action="">
-                        <input name='fragment' id="id_token" type='hidden' value='' />
-                        <script type='text/javascript'>
-                            document.getElementById('id_token').value = getIDtoken();
-                            document.forms[0].submit();
-                        </script>
-                    </form>
                 </table>
-                <%session.invalidate();%>
+                <%--<%session.invalidate();%>--%>
             </div>
             <% } else if (OpenIDConnectConstants.ID_TOKEN_TOKEN.equals(implicitResponseType)) {%>
             <div>
                 <table class="user_pass_table">
                     <tbody>
+                    <form method="post" action="">
                     <tr>
                         <td><label><h5>Access Token :</h5></label></td>
                         <td><input id="accessToken" name="accessToken" style="width:350px"/>
@@ -594,15 +606,34 @@
                             </script>
                         </td>
                     </tr>
+                    </form>
+                    <%if(request.getParameter("idToken")==null){%>
+                    <script>
+                        document.forms[0].submit();
+                    </script>
+                    <%}else{
+                        String sid = SessionIDStore.getSid(request.getParameter("idToken"));
+                        if(sid!=null) {
+                            SessionIDStore.storeSession(sid,session);
+                        }
+                    }%>
                     <tr>
                         <script type="text/javascript">
                             var decodedIdToken = JSON.parse(getDecodedIDToken());
                             makeList(decodedIdToken);
                         </script>
                     </tr>
+                    <tr>
+                        <td>
+                            <button type="button" class="button"
+                                    onclick="document.location.href='<%=(String)session.getAttribute(OAuth2Constants.OIDC_LOGOUT_ENDPOINT)%>';">
+                                Logout
+                            </button>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
-                <%session.invalidate();%>
+                <%--<%session.invalidate();%>--%>
             </div>
             <% } else if (grantType != null && OAuth2Constants.OAUTH2_GRANT_TYPE_IMPLICIT.equals(grantType)) {%>
             <div>

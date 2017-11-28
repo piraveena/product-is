@@ -26,11 +26,9 @@ public class OidcBackChannelLogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
             IOException {
         doPost(req,resp);
-        log.info("*****accessing get method");
     }
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
             IOException {
-        log.info("*****accessing post method");
         String sid = null;
         try {
             sid = (String) SignedJWT.parse(req.getParameter("logoutToken")).getJWTClaimsSet().getClaim("sid");
@@ -39,7 +37,6 @@ public class OidcBackChannelLogoutServlet extends HttpServlet {
         }
 
         HttpSession session = SessionIDStore.getSession(sid);
-        log.info(sid);
         session.invalidate();
 
     }

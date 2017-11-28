@@ -8,7 +8,6 @@
 <%@ page import="org.wso2.sample.identity.oauth2.OAuthPKCEAuthenticationRequestBuilder" %>
 <%@ page import="org.wso2.sample.identity.oauth2.OpenIDConnectConstants" %>
 <%@ page import="java.util.UUID" %>
-<%@ page import="org.wso2.sample.identity.oauth2.SessionIDStore" %>
 <%@page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
@@ -48,7 +47,6 @@
         if (scope == null || scope.trim().length() == 0) {
             scope = "default";
         }
-        SessionIDStore.getGrant(authzGrantType);
 
         session.setAttribute(OAuth2Constants.OAUTH2_GRANT_TYPE, authzGrantType);
         session.setAttribute(OAuth2Constants.CONSUMER_KEY, consumerKey);
