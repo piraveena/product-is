@@ -7,7 +7,7 @@
 <%@ page import="java.util.UUID" %>
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
 <%@ page import="org.wso2.sample.identity.oauth2.OpenIDConnectConstants" %>
-<%@ page import="org.wso2.sample.identity.oauth2.SessionIDStore" %>
+<%@ page import="org.wso2.sample.identity.oauth2.SessionIdStore" %>
 <%@ page import="java.net.URI" %>
 <%
     String code = null;
@@ -561,9 +561,9 @@
                         document.forms[0].submit();
                     </script>
                     <%}else{
-                        String sid = SessionIDStore.getSid(request.getParameter("idToken"));
+                        String sid = SessionIdStore.getSid(request.getParameter("idToken"));
                         if(sid!=null) {
-                            SessionIDStore.storeSession(sid,session);
+                            SessionIdStore.storeSession(sid,session);
                         }
                     }%>
 
@@ -612,9 +612,9 @@
                         document.forms[0].submit();
                     </script>
                     <%}else{
-                        String sid = SessionIDStore.getSid(request.getParameter("idToken"));
+                        String sid = SessionIdStore.getSid(request.getParameter("idToken"));
                         if(sid!=null) {
-                            SessionIDStore.storeSession(sid,session);
+                            SessionIdStore.storeSession(sid,session);
                         }
                     }%>
                     <tr>

@@ -3,19 +3,16 @@ package org.wso2.sample.identity.oauth2;
 import com.nimbusds.jwt.SignedJWT;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.net.URI;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class SessionIDStore {
-    private static Log log= LogFactory.getLog(SessionIDStore.class);
+public class SessionIdStore {
+    private static Log log= LogFactory.getLog(SessionIdStore.class);
     private static Map<String , HttpSession> sessionMap =  new HashMap<>();
     public static void storeSession( String sid, HttpSession session){
         sessionMap.put(sid, session);

@@ -2,13 +2,10 @@ package org.wso2.sample.identity.oauth2;
 
 
 import com.nimbusds.jwt.SignedJWT;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
-import org.json.JSONObject;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,7 +33,7 @@ public class OidcBackChannelLogoutServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        HttpSession session = SessionIDStore.getSession(sid);
+        HttpSession session = SessionIdStore.getSession(sid);
         session.invalidate();
 
     }
