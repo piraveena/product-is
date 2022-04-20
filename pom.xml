@@ -2199,7 +2199,7 @@
         <identity.apps.version>1.2.888</identity.apps.version>
 
         <!-- Charon -->
-        <charon.version>3.4.1</charon.version>
+        <charon.version>3.4.24</charon.version>
 
         <!-- Carbon Kernel -->
         <carbon.kernel.version>4.7.0-m13</carbon.kernel.version>
